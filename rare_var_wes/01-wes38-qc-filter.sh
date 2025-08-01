@@ -10,6 +10,10 @@
 # mem2_ssd1_v2_x16 - 600GB ssd 0.106/hr
 # mem2_ssd1_v2_x32 - 1200GB ssd 0.212/hr
 
+### 01/08/2025 (based on 06 01 2024)
+# mem2_ssd1_v2_x16 - 600GB ssd 0.1168/hr
+# mem2_ssd1_v2_x32 - 1200GB ssd 0.2336/hr
+
 # How to Run:
 # Run this shell script using: 
 #   sh ./01-wes38-qc-filter.sh 
@@ -43,34 +47,35 @@
 exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLINK format - final release/"
 #set this to the exome data field for your release
 data_field="ukb23158"
-data_file_dir="/data/wes_rvar/"
-txt_file_dir="/gwas_cohort_textfiles/"
+data_file_dir="/Epilepsy/test_plink/" #output folder, rename this for main analysis
+txt_file_dir="/Epilepsy/test_import/" #input folder, created in prep step
+sample_list="phenotype.txt"
 
-
-# default inexpensive mem/storage ballance
+# default inexpensive mem/storage balance
 for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
+    #create the command here
     run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1\
-      --no-pheno --keep phenotypes.rvt.v09-09-22.txt \
+      --no-pheno --keep ${sample_list} \
       --geno 0.1 --mind 0.1 --recode vcf-iid \
-      --out WES_c${i}_qc_pass; rm ${data_field}_c${i}_b0_v1.*; \
+      --out WES_c${i}_qc_pass;\ #don't remove the original input file
       (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
       | bgzip -c > WES_c${i}_qc_pass.vcf.gz; tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
       rm WES_c${i}_qc_pass.vcf "
 
-
+    #append correct file paths here
     dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
-     -iin="${txt_file_dir}/phenotypes.rvt.v09-09-22.txt" \
+     -iin="${txt_file_dir}/${sample_list}" \
      -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16"\
-     --destination="${project}:/data/wes_rvar/" --brief --yes
+     --destination="${data_file_dir}" --brief --yes
 done
 
 
 # larger chromozome files, need a large storage disk. your needs will vary based on number of subjects in your cohort
 for i in {1,2,19}; do
     run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1\
-      --no-pheno --keep phenotypes.rvt.v09-09-22.txt \
+      --no-pheno --keep ${sample_list} \
       --geno 0.1 --mind 0.1 --recode vcf-iid \
       --out WES_c${i}_qc_pass; rm ${data_field}_c${i}_b0_v1.*; \
       (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
@@ -81,9 +86,9 @@ for i in {1,2,19}; do
     dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
-     -iin="${txt_file_dir}/phenotypes.rvt.v09-09-22.txt" \
+     -iin="${txt_file_dir}/${sample_list}" \
      -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x32"\
-     --destination="${project}:/data/wes_rvar/" --brief --yes
+     --destination="${data_file_dir}" --brief --yes
 done
 
 
