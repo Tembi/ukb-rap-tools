@@ -50,19 +50,18 @@
 exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLINK format - final release/"
 #set this to the exome data field for your release
 data_field="ukb23158"
-data_file_dir="/data/wes_rvar/"
-txt_file_dir="/gwas_cohort_textfiles/"
+data_file_dir="/Epilepsy/test_output/" #output folder, rename this for main analysis
+txt_file_dir="/Epilepsy/test_import/" #input folder, created in prep step
+pheno_file="${txt_file_dir}/pheno_rvt_20250801.txt" #pheno file
+gene_file="${txt_file_dir}/genelist_rvt_20250801.txt" #gene list
+cov_file="${txt_file_dir}/cov_rvt_20250801.txt" #cov file
 
 # set $genelist to a list of genes for this rarevariant test,  otherwise leave it blank for all genes
 #genelist=" "
 #genelist="--gene ABCG5,ABCG8,APOE,CASR,CEL,CFTR,CLDN2,CMIP,CPA1,CTRC,GGT1,PRSS1,PRSS2,PRSS3,SBDS,SLC26A9,SPINK1,UBR1,CPA1,TRB,TRPV6,RIPPLY1,TYW1,LINC01251-PRSS3"
-
-# gene set for gallstones
-genelist="--gene GCKR,ABCG5,ABCG8,TMBIM1,UGT1A1,TM4SF4,LRBA,DAGLB,ABCB4,GATA4,CYP7A1,UBXN2B,MAL2,SNORA32,TTC39B,MLLT10,SKIDA1,MARCHF8,JMJD1C,FADS2,HNF1A,\
-SLC10A2,SERPINA1,ANPEP,LITAF,HNF1B,ATP8B1,FUT6,IRF2BP1,FOXA3,SULT2A1,FUT2,HNF4A,KDELR3,GPR61,CPS1,AP1S3,FARP2,ARHGEF3,UGDH,VEGFA,SYNJ2,RP11-115J16.1,\
-LOC107986957,TRIB1,FRAT2,MUC5AC,POC1B,SYT16,CYB5B,NFAT5,APOE,AL035045.1,PTTG1IP,NPAS2,PCDHB3,TBC1D32,GOT1,PKD2L1,MALAT1,ITCH,SH3BP4,EIF4E3,LMNB1,\
-MLXIPL,ATG16L2,ADAMTS20,UBR1,CLDN7,ADAR,SHROOM3,GMDS-DT,FAM8A1,LIN28B,ABO,ANO1,TMEM147,SPTLC3,TNRC6B"
-
+ 
+# read in gene set for disease
+genelist="--gene $(grep -E '^[A-Za-z0-9]+$' ${gene_file} | tr '[:lower:]' '[:upper:]' | paste -sd, -)"
 
 # loop over all genes
 
@@ -71,17 +70,17 @@ for i in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20,22,X}; do
     run_rvtest_wes="wget https://github.com/zhanxw/rvtests/releases/download/v2.1.0/rvtests_linux64.tar.gz; \
       tar zxvf rvtests_linux64.tar.gz;  \
       ./executable/rvtest --inVcf WES_c${i}_qc_pass.vcf.gz --freqUpper 0.05 \
-      --pheno phenotypes.rvt.v09-09-22.txt --pheno-name AP --out AP_c${i}_rvtest_gs5 \
-      --covar covariates.rvt.v09-09-22.txt --covar-name age,sex.b2,bmi,pca1,pca2,pca3,pca4,pca5,pca6 \
+      --pheno ${pheno_file} --pheno-name status --out out_c${i}_rvtest_gs5 \
+      --covar ${cov_file} --covar-name age,sex,pc1,pc2,pc3,pc4 \
       --geneFile refFlat_c${i}.txt.gz ${genelist} --burden cmc --kernel skat,skato ; \
       rm rvtests_linux64.tar.gz; rm -rf ex*; rm -rf READM* "
     
     dx run swiss-army-knife -iin="${data_file_dir}/WES_c${i}_qc_pass.vcf.gz" \
      -iin="${data_file_dir}/WES_c${i}_qc_pass.vcf.gz.tbi" \
-     -iin="${txt_file_dir}/phenotypes.rvt.v09-09-22.txt" \
-     -iin="${txt_file_dir}/covariates.rvt.v09-09-22.txt" \
+     -iin="${txt_file_dir}/${pheno_file}" \
+     -iin="${txt_file_dir}/${cov_file}" \
      -iin="${txt_file_dir}/reflat38/refFlat_c${i}.txt.gz" \
      -icmd="${run_rvtest_wes}" --tag="Step2-rvt" --instance-type "mem1_ssd1_v2_x16"\
-     --destination="${project}:/data/wes_rvar/" --brief --yes
+     --destination="${data_file_dir}" --brief --yes
 
 done
