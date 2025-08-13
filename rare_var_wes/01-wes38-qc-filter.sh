@@ -49,7 +49,7 @@ exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLIN
 data_field="ukb23158"
 data_file_dir="/Epilepsy/test_output/" #output folder, rename this for main analysis
 txt_file_dir="/Epilepsy/test_import/" #input folder, created in prep step
-sample_list="pheno_rvt_20250801.txt" #rename this based on phenotype file from prep step
+sample_list="sample_rvt_20250801.txt" #rename this based on sample file from prep step
 
 # default inexpensive mem/storage balance
 for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
