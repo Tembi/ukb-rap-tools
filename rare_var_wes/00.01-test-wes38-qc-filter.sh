@@ -27,7 +27,7 @@
 # for each chromosome, you will run a separate worker
 # - /{exome_file_dir}/ukb23158_c1_b0_v1.bed 
 # - /{exome_file_dir}/ukb23158_c1_b0_v1.bim 
-# - /{exome_file_dir}/ukb23158_c1_b0_v1.bam 
+# - /{exome_file_dir}/ukb23158_c1_b0_v1.fam 
 
 # Outputs (for each chromosome):
 # - /{data_file_dir}/WES_c1_qc_pass.vcf.gz
@@ -48,8 +48,8 @@ exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLIN
 #set this to the exome data field for your release
 data_field="ukb23158"
 data_file_dir="/Epilepsy/test_output/" #output folder, rename this for main analysis
-txt_file_dir="/Epilepsy/test_import/" #input folder, created in prep step
-sample_list="sample_rvt_20250801.txt" #rename this based on phenotype file from prep step
+txt_file_dir="/Epilepsy/import/" #input folder, created in prep step
+sample_list="sample_rvt202508013.txt" #rename this based on phenotype file from prep step
 
 # default inexpensive mem/storage balance
 # TEST ON CHROMOSOME 21
