@@ -48,8 +48,8 @@ exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLIN
 #set this to the exome data field for your release
 data_field="ukb23158"
 data_file_dir="Epilepsy/test_output" #output folder, rename this for main analysis
-txt_file_dir="Epilepsy/import" #input folder, created in prep step
-sample_list="sample_rvt202508013.txt" #rename this based on phenotype file from prep step
+txt_file_dir="/Epilepsy/import" #input folder, created in prep step
+sample_list="sample_rvt20250813.txt" #rename this based on phenotype file from prep step
 
 # default inexpensive mem/storage balance
 # TEST ON CHROMOSOME 21
@@ -58,7 +58,7 @@ chr_no="21"
 run_plink_wes="plink2 --bfile ${data_field}_c${chr_no}_b0_v1\
   --no-pheno --keep ${sample_list} \
   --geno 0.1 --mind 0.1 --recode vcf-iid \
-  --out WES_c${chr_no}_qc_pass;\ #don't remove the original input file
+  --out WES_c${chr_no}_qc_pass; rm ${data_field}_c${chr_no}_b0_v1.*; \
   (grep ^"#" WES_c${chr_no}_qc_pass.vcf; grep -v ^"#" WES_c${chr_no}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
   | bgzip -c > WES_c${chr_no}_qc_pass.vcf.gz; tabix -f -p vcf WES_c${chr_no}_qc_pass.vcf.gz; \
   rm WES_c${chr_no}_qc_pass.vcf "
@@ -66,11 +66,9 @@ run_plink_wes="plink2 --bfile ${data_field}_c${chr_no}_b0_v1\
 #append correct file paths here
 dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${chr_no}_b0_v1.bed" \
   -iin="${exome_file_dir}/${data_field}_c${chr_no}_b0_v1.bim" \
-  -iin="${exome_file_dir}/${data_field}_c${chr_no}_b0_v1.fam"\
+  -iin="${exome_file_dir}/${data_field}_c${chr_no}_b0_v1.fam" \
   -iin="${txt_file_dir}/${sample_list}" \
-  -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16"\
+  -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16" \
   --destination="${data_file_dir}" --brief --yes
-
-
 
 
