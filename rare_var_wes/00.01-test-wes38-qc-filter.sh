@@ -47,7 +47,7 @@
 exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLINK format - final release"
 #set this to the exome data field for your release
 data_field="ukb23158"
-data_file_dir="Epilepsy/test_output" #output folder, rename this for main analysis
+data_file_dir="/Epilepsy/test_output" #output folder, rename this for main analysis
 txt_file_dir="/Epilepsy/import" #input folder, created in prep step
 sample_list="sample_rvt20250813.txt" #rename this based on phenotype file from prep step
 

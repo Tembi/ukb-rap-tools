@@ -48,47 +48,52 @@ exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLIN
 #set this to the exome data field for your release
 data_field="ukb23158"
 data_file_dir="/Epilepsy/test_output/" #output folder, rename this for main analysis
-txt_file_dir="/Epilepsy/test_import/" #input folder, created in prep step
-sample_list="sample_rvt_20250801.txt" #rename this based on sample file from prep step
+txt_file_dir="/Epilepsy/import/" #input folder, created in prep step
+sample_list="sample_rvt20250813.txt" #rename this based on sample file from prep step
 
 # default inexpensive mem/storage balance
 for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
     #create the command here
-    run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1\
-      --no-pheno --keep ${sample_list} \
-      --geno 0.1 --mind 0.1 --recode vcf-iid \
-      --out WES_c${i}_qc_pass;\ #don't remove the original input file
-      (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
-      | bgzip -c > WES_c${i}_qc_pass.vcf.gz; tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
-      rm WES_c${i}_qc_pass.vcf "
+  run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1 \
+    --no-pheno --keep ${sample_list} \
+    --geno 0.1 --mind 0.1 --recode vcf-iid \
+    --out WES_c${i}_qc_pass; \
+  rm ${data_field}_c${i}_b0_v1.*; \
+  (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
+    | bgzip -c > WES_c${i}_qc_pass.vcf.gz; \
+  tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
+  rm WES_c${i}_qc_pass.vcf"
+
 
     #append correct file paths here
     dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
      -iin="${txt_file_dir}/${sample_list}" \
-     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16"\
+     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem3_ssd3_x12"\
      --destination="${data_file_dir}" --brief --yes
 done
 
 
-# larger chromozome files, need a large storage disk. your needs will vary based on number of subjects in your cohort
-for i in {1,2,19}; do
-    run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1\
-      --no-pheno --keep ${sample_list} \
-      --geno 0.1 --mind 0.1 --recode vcf-iid \
-      --out WES_c${i}_qc_pass; \
-      (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
-      | bgzip -c > WES_c${i}_qc_pass.vcf.gz; tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
-      rm WES_c${i}_qc_pass.vcf "
+# # larger chromozome files, need a large storage disk. your needs will vary based on number of subjects in your cohort
+# for i in {1,2,19}; do
+#   run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1 \
+#     --no-pheno --keep ${sample_list} \
+#     --geno 0.1 --mind 0.1 --recode vcf-iid \
+#     --out WES_c${i}_qc_pass; \
+#   rm ${data_field}_c${i}_b0_v1.*; \
+#   (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
+#     | bgzip -c > WES_c${i}_qc_pass.vcf.gz; \
+#   tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
+#   rm WES_c${i}_qc_pass.vcf"
 
     
-    dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
-     -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
-     -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
-     -iin="${txt_file_dir}/${sample_list}" \
-     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x32"\
-     --destination="${data_file_dir}" --brief --yes
-done
+#     dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
+#      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
+#      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
+#      -iin="${txt_file_dir}/${sample_list}" \
+#      -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x64"\
+#      --destination="${data_file_dir}" --brief --yes
+# done
 
 
