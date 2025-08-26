@@ -61,8 +61,8 @@ for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
     --out WES_c${i}_qc_pass; \
   rm ${data_field}_c${i}_b0_v1.*; \
   (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
-    | bgzip -c > WES_c${i}_qc_pass.vcf.gz; \
-  tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
+    | bgzip -c > WES_c${i}_qc_lof_pass.vcf.gz; \
+  tabix -f -p vcf WES_c${i}_qc_lof_pass.vcf.gz; \
   rm WES_c${i}_qc_pass.vcf"
 
 
@@ -72,7 +72,7 @@ for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
      -iin="${txt_file_dir}/${sample_list}" \
      -iin="${data_file_dir}/${var_list}" \
-     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem3_ssd3_x12"\
+     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16"\
      --destination="${data_file_dir}" --brief --yes
 done
 
