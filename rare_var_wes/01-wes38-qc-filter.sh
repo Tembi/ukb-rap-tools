@@ -53,49 +53,50 @@ sample_list="sample_rvt20250813.txt" #rename this based on sample file from prep
 var_list="LoF_variantlist.txt" #variant list created by filtering wes annotations from the helper_files
 
 # default inexpensive mem/storage balance
-for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
+#for i in {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,X}; do
     #create the command here
-  run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1 \
-    --no-pheno --keep ${sample_list} \
-    --geno 0.1 --mind 0.1 --extract ${var_list} --recode vcf-iid \
-    --out WES_c${i}_qc_pass; \
-  rm ${data_field}_c${i}_b0_v1.*; \
-  (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
-    | bgzip -c > WES_c${i}_qc_lof_pass.vcf.gz; \
-  tabix -f -p vcf WES_c${i}_qc_lof_pass.vcf.gz; \
-  rm WES_c${i}_qc_pass.vcf"
+#  run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1 \
+#    --no-pheno --keep ${sample_list} \
+#    --geno 0.1 --mind 0.1 --extract ${var_list} --recode vcf-iid \
+#    --out WES_c${i}_qc_pass; \
+#  rm ${data_field}_c${i}_b0_v1.*; \
+#  (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
+#    | bgzip -c > WES_c${i}_qc_lof_pass.vcf.gz; \
+#  tabix -f -p vcf WES_c${i}_qc_lof_pass.vcf.gz; \
+#  rm WES_c${i}_qc_pass.vcf"
 
 
     #append correct file paths here
-    dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
-     -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
-     -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
-     -iin="${txt_file_dir}/${sample_list}" \
-     -iin="${data_file_dir}/${var_list}" \
-     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16"\
-     --destination="${data_file_dir}" --brief --yes
-done
+#    dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
+#     -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
+#     -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
+#     -iin="${txt_file_dir}/${sample_list}" \
+#     -iin="${data_file_dir}/${var_list}" \
+#     -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x16"\
+#     --destination="${data_file_dir}" --brief --yes
+#done
 
 
 # # larger chromozome files, need a large storage disk. your needs will vary based on number of subjects in your cohort
-# for i in {1,2,19}; do
-#   run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1 \
-#     --no-pheno --keep ${sample_list} \
-#     --geno 0.1 --mind 0.1 --recode vcf-iid \
-#     --out WES_c${i}_qc_pass; \
-#   rm ${data_field}_c${i}_b0_v1.*; \
-#   (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
-#     | bgzip -c > WES_c${i}_qc_pass.vcf.gz; \
-#   tabix -f -p vcf WES_c${i}_qc_pass.vcf.gz; \
-#   rm WES_c${i}_qc_pass.vcf"
+ for i in {1,2,19}; do
+   run_plink_wes="plink2 --bfile ${data_field}_c${i}_b0_v1 \
+    --no-pheno --keep ${sample_list} \
+    --geno 0.1 --mind 0.1 --extract ${var_list} --recode vcf-iid \
+    --out WES_c${i}_qc_pass; \
+   rm ${data_field}_c${i}_b0_v1.*; \
+   (grep ^"#" WES_c${i}_qc_pass.vcf; grep -v ^"#" WES_c${i}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
+     | bgzip -c > WES_c${i}_qc_lof_pass.vcf.gz; \
+   tabix -f -p vcf WES_c${i}_qc_lof_pass.vcf.gz; \
+   rm WES_c${i}_qc_pass.vcf"
 
     
-#     dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
-#      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
-#      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
-#      -iin="${txt_file_dir}/${sample_list}" \
-#      -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x64"\
-#      --destination="${data_file_dir}" --brief --yes
-# done
+     dx run swiss-army-knife -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bed" \
+      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.bim" \
+      -iin="${exome_file_dir}/${data_field}_c${i}_b0_v1.fam"\
+      -iin="${txt_file_dir}/${sample_list}" \
+      -iin="${data_file_dir}/${var_list}" \
+      -icmd="${run_plink_wes}" --tag="S1-vcfprep" --instance-type "mem2_ssd1_v2_x32"\
+      --destination="${data_file_dir}" --brief --yes
+done
 
 
