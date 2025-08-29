@@ -19,7 +19,7 @@
 # Note that you can adjust the output directory by setting the data_file_dir variable
 # - /Data/wes_rvar/{phenotype}_c1_rvtest.CMC.assoc - CMC results for chromosome 1 
 # - /Data/wes_rvar/{phenotype}_c2_rvtest.CMC.assoc - CMC results for chromosome 2 
-# - /Data/wes_rvar/{phenotype}_c1_rvtest.Skat.assoc - skat results for chromosome 1 
+# - /Data/wes_rvar/{phenotype}_c1_rvtest.Skat.assoc - skat results for chromosome 1 ### THIS WAS NOT EXECUTED IN STEP 2
 # - /Data/wes_rvar/{phenotype}_c2_rvtest.Skat.assoc - skat results for chromosome 2 
 # - /Data/wes_rvar/{phenotype}_c1_rvtest.SkatO.assoc - skat results for chromosome 1 
 # - /Data/wes_rvar/{phenotype}_c2_rvtest.SkatO.assoc - skat results for chromosome 2 
@@ -39,15 +39,14 @@
 #       save it into $out_file
 # 5. delete rvtest files
 
-data_file_dir="/data/wes_rvar"
+out_dir="/Epilepsy/test_output/rv_out/"
+data_file_dir="/Epilepsy/test_output" 
 
-merge_cmd='out_file_cmc="AP_rvtest_gs5.CMC.assoc"
-     out_file_skat="AP_rvtest_gs5.Skat.assoc"
-     out_file_skatO="AP_rvtest_gs5.SkatO.assoc"
-     cp /mnt/project/data/wes_rvar/AP_c*.assoc .
+merge_cmd='out_file_cmc="epi_rv_combined_allchr.CMC.assoc"
+      out_file_skatO="epi_rv_combined_allchr.SkatO.assoc"
+      cp /mnt/project/Epilepsy/test_output/rv_out/out_c*_combined_rvtest_gs.assoc* .
 
 echo -e "Gene\tRANGE\tN_INFORMATIVE\tNumVar\tNumPolyVar\tNonRefSite\tPvalue" > $out_file_cmc
-echo -e "Gene\tRANGE\tN_INFORMATIVE\tNumVar\tNumPolyVar\tQ\tPvalue\tNumPerm\tActualPerm\tStat\tNumGreater\tNumEqual\tPermPvalue" > $out_file_skat
 echo -e "Gene\tRANGE\tN_INFORMATIVE\tNumVar\tNumPolyVar\tQ\tRho\tPvalue" > $out_file_skatO
 
 files="./*_c*CMC.assoc"
@@ -56,21 +55,18 @@ do
    tail -n+2 $f | tr " " "\t" >> $out_file_cmc
 done
 
-# files="./*_c*Skat.assoc"
-# for f in $files
-# do
-#    tail -n+2 $f | tr " " "\t" >> $out_file_skat
-# done
-
 files="./*_c*SkatO.assoc"
 for f in $files
 do
    tail -n+2 $f | tr " " "\t" >> $out_file_skatO
 done
 
-rm *_c*.assoc ' 
+rm out_c*_combined_rvtest_gs.assoc*'
 
 
 dx run swiss-army-knife -iin="/${data_file_dir}/WES_c11_qc_pass.log" \
    -icmd="${merge_cmd}" --tag="Step3" --instance-type "mem2_ssd1_v2_x32"\
-   --destination="${project}:/data/wes_rvar/" --brief --yes 
+   --destination="${out_dir}" --brief --yes 
+
+
+

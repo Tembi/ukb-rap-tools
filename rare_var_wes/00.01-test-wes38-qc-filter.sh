@@ -49,8 +49,8 @@ exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLIN
 data_field="ukb23158"
 data_file_dir="/Epilepsy/test_output" #output folder, rename this for main analysis
 txt_file_dir="/Epilepsy/import" #input folder, created in prep step
-sample_list="sample_rvt20250813.txt" #rename this based on phenotype file from prep step
-var_list="LoF_variantlist.txt" #variant list created by filtering wes annotations from the helper_files
+sample_list="sample_rvt20250828.txt" #rename this based on phenotype file from prep step
+var_list="combined_variantlist.txt" #variant list created by filtering wes annotations from the helper_files
 
 # default inexpensive mem/storage balance
 # TEST ON CHROMOSOME 21
@@ -61,7 +61,7 @@ run_plink_wes="plink2 --bfile ${data_field}_c${chr_no}_b0_v1\
   --geno 0.1 --mind 0.1 --extract ${var_list} --recode vcf-iid \
   --out WES_c${chr_no}_qc_pass; rm ${data_field}_c${chr_no}_b0_v1.*; \
   (grep ^"#" WES_c${chr_no}_qc_pass.vcf; grep -v ^"#" WES_c${chr_no}_qc_pass.vcf | sort -k1,1n -k2,2n) \
-  | bgzip -c > WES_c${chr_no}_qc_lof_nochr_pass.vcf.gz; tabix -f -p vcf WES_c${chr_no}_qc_lof_nochr_pass.vcf.gz; \
+  | bgzip -c > WES_c${chr_no}_qc_combined_nochr_pass.vcf.gz; tabix -f -p vcf WES_c${chr_no}_qc_combined_nochr_pass.vcf.gz; \
   rm WES_c${chr_no}_qc_pass.vcf "
 
 #append correct file paths here

@@ -67,13 +67,13 @@ ref_dir="${txt_file_dir}/refFlat38"
 for i in {1,2,4,5,6,7,8,9,10,11,12,13,14,15,17,18,21}; do
   run_rvtest_wes="wget https://github.com/zhanxw/rvtests/releases/download/v2.1.0/rvtests_linux64.tar.gz; \
       tar zxvf rvtests_linux64.tar.gz;  \
-      ./executable/rvtest --noweb --inVcf WES_c${i}_qc_lof_pass.vcf.gz --freqUpper 0.01 \
-      --pheno ${pheno_file} --pheno-name status --out out_c${i}_rvtest_gs5 \
+      ./executable/rvtest --noweb --inVcf WES_c${i}_qc_combined_pass.vcf.gz --freqUpper 0.01 \
+      --pheno ${pheno_file} --pheno-name status --out out_c${i}_combined_rvtest_gs5 \
       --geneFile refFlat_c${i}.txt --burden cmc --kernel skato ; \
       rm rvtests_linux64.tar.gz; rm -rf ex*; rm -rf READM* " 
 
-  dx run swiss-army-knife -iin="${data_file_dir}/WES_c${i}_qc_lof_pass.vcf.gz" \
-    -iin="${data_file_dir}/WES_c${i}_qc_lof_pass.vcf.gz.tbi" \
+  dx run swiss-army-knife -iin="${data_file_dir}/WES_c${i}_qc_combined_pass.vcf.gz" \
+    -iin="${data_file_dir}/WES_c${i}_qc_combined_pass.vcf.gz.tbi" \
     -iin="${txt_file_dir}/${pheno_file}" \
     -iin="${txt_file_dir}/${cov_file}" \
     -iin="${ref_dir}/refFlat_c${i}.txt" \
