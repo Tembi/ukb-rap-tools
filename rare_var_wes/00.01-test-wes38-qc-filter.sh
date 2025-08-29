@@ -60,8 +60,8 @@ run_plink_wes="plink2 --bfile ${data_field}_c${chr_no}_b0_v1\
   --no-pheno --keep ${sample_list} \
   --geno 0.1 --mind 0.1 --extract ${var_list} --recode vcf-iid \
   --out WES_c${chr_no}_qc_pass; rm ${data_field}_c${chr_no}_b0_v1.*; \
-  (grep ^"#" WES_c${chr_no}_qc_pass.vcf; grep -v ^"#" WES_c${chr_no}_qc_pass.vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) \
-  | bgzip -c > WES_c${chr_no}_qc_lof_pass.vcf.gz; tabix -f -p vcf WES_c${chr_no}_qc_lof_pass.vcf.gz; \
+  (grep ^"#" WES_c${chr_no}_qc_pass.vcf; grep -v ^"#" WES_c${chr_no}_qc_pass.vcf | sort -k1,1n -k2,2n) \
+  | bgzip -c > WES_c${chr_no}_qc_lof_nochr_pass.vcf.gz; tabix -f -p vcf WES_c${chr_no}_qc_lof_nochr_pass.vcf.gz; \
   rm WES_c${chr_no}_qc_pass.vcf "
 
 #append correct file paths here

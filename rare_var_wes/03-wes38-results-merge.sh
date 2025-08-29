@@ -56,11 +56,11 @@ do
    tail -n+2 $f | tr " " "\t" >> $out_file_cmc
 done
 
-files="./*_c*Skat.assoc"
-for f in $files
-do
-   tail -n+2 $f | tr " " "\t" >> $out_file_skat
-done
+# files="./*_c*Skat.assoc"
+# for f in $files
+# do
+#    tail -n+2 $f | tr " " "\t" >> $out_file_skat
+# done
 
 files="./*_c*SkatO.assoc"
 for f in $files

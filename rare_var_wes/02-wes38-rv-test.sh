@@ -52,55 +52,65 @@ exome_file_dir="/Bulk/Exome sequences/Population level exome OQFE variants, PLIN
 data_field="ukb23158"
 data_file_dir="/Epilepsy/test_output" #output folder, rename this for main analysis
 out_dir="/Epilepsy/test_output/rv_out/"
-txt_file_dir="/Epilepsy/import/" #input folder, created in prep step
-pheno_file="${txt_file_dir}/pheno_rvt20250827.txt" #pheno file
-gene_file="${txt_file_dir}/genelist_rvt20250825.txt" #gene list
-cov_file="${txt_file_dir}/cov_rvt20250827.txt" #cov file
+txt_file_dir="/Epilepsy/import" #input folder, created in prep step
+pheno_file="pheno_rvt20250828.txt" #pheno file
+gene_file="genelist_rvt20250825.txt" #gene list
+cov_file="cov_rvt20250828.txt" #cov file
 ref_dir="${txt_file_dir}/refFlat38"
 
 # set $genelist to a list of genes for this rarevariant test,  otherwise leave it blank for all genes
 #genelist=" "
 #genelist="--gene ABCG5,ABCG8,APOE,CASR,CEL,CFTR,CLDN2,CMIP,CPA1,CTRC,GGT1,PRSS1,PRSS2,PRSS3,SBDS,SLC26A9,SPINK1,UBR1,CPA1,TRB,TRPV6,RIPPLY1,TYW1,LINC01251-PRSS3"
- 
-# read in gene set for disease
-genelist="--gene $(grep -E '^[A-Za-z0-9]+$' ${gene_file} | tr '[:lower:]' '[:upper:]' | paste -sd, -)"
-
+#WES_c${i}_qc_pass.vcf.gz.tbi 
 # loop over all genes
 
-# for i in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20,22,X}; do
+for i in {1,2,4,5,6,7,8,9,10,11,12,13,14,15,17,18,21}; do
+  run_rvtest_wes="wget https://github.com/zhanxw/rvtests/releases/download/v2.1.0/rvtests_linux64.tar.gz; \
+      tar zxvf rvtests_linux64.tar.gz;  \
+      ./executable/rvtest --noweb --inVcf WES_c${i}_qc_lof_pass.vcf.gz --freqUpper 0.01 \
+      --pheno ${pheno_file} --pheno-name status --out out_c${i}_rvtest_gs5 \
+      --geneFile refFlat_c${i}.txt --burden cmc --kernel skato ; \
+      rm rvtests_linux64.tar.gz; rm -rf ex*; rm -rf READM* " 
 
-#     run_rvtest_wes="wget https://github.com/zhanxw/rvtests/releases/download/v2.1.0/rvtests_linux64.tar.gz; \
-#       tar zxvf rvtests_linux64.tar.gz;  \
-#       ./executable/rvtest --inVcf WES_c${i}_qc_pass.vcf.gz --freqUpper 0.05 \
-#       --pheno ${pheno_file} --pheno-name status --out out_c${i}_rvtest_gs5 \
-#       --covar ${cov_file} --covar-name age,sex,pc1,pc2,pc3,pc4 \
-#       --geneFile refFlat_c${i}.txt.gz ${genelist} --burden cmc --kernel skat,skato ; \
-#       rm rvtests_linux64.tar.gz; rm -rf ex*; rm -rf READM* "
-    
-#     dx run swiss-army-knife -iin="${data_file_dir}/WES_c${i}_qc_pass.vcf.gz" \
-#      -iin="${data_file_dir}/WES_c${i}_qc_pass.vcf.gz.tbi" \
-#      -iin="${txt_file_dir}/${pheno_file}" \
-#      -iin="${txt_file_dir}/${cov_file}" \
-#      -iin="${txt_file_dir}/reflat38/refFlat_c${i}.txt.gz" \
-#      -icmd="${run_rvtest_wes}" --tag="Step2-rvt" --instance-type "mem1_ssd1_v2_x16"\
-#      --destination="${data_file_dir}" --brief --yes
-
-# done
-
-##### TEST RUN ON CHR 21
-### HAVE USED GENERAL DEFINITION OF 'RARE VARIANTS HERE AS MAF < 1%'
-run_rvtest_wes="wget https://github.com/zhanxw/rvtests/releases/download/v2.1.0/rvtests_linux64.tar.gz; \
-    tar zxvf rvtests_linux64.tar.gz;  \
-    ./executable/rvtest --inVcf WES_c21_qc_lof_pass.vcf.gz --freqUpper 0.01 \
-    --pheno ${pheno_file} --pheno-name status --out out_c21_rvtest_gs5 \
-    --covar ${cov_file} --covar-name sex,p26201_a0,p26201_a1,p26201_a2,p26201_a3 \
-    --geneFile refFlat_c21.txt.gz ${genelist} --burden cmc --kernel skat,skato ; \
-    rm rvtests_linux64.tar.gz; rm -rf ex*; rm -rf READM* "
-  
-  dx run swiss-army-knife -iin="${data_file_dir}/WES_c21_qc_pass.vcf.gz" \
-    -iin="${data_file_dir}/WES_c21_qc_pass.vcf.gz.tbi" \
+  dx run swiss-army-knife -iin="${data_file_dir}/WES_c${i}_qc_lof_pass.vcf.gz" \
+    -iin="${data_file_dir}/WES_c${i}_qc_lof_pass.vcf.gz.tbi" \
     -iin="${txt_file_dir}/${pheno_file}" \
     -iin="${txt_file_dir}/${cov_file}" \
-    -iin="${ref_dir}/refFlat_c21.txt.gz" \
-    -icmd="${run_rvtest_wes}" --tag="Step2-rvt" --instance-type "mem1_ssd1_v2_x8"\
-    --destination="${data_file_dir}" --brief --yes
+    -iin="${ref_dir}/refFlat_c${i}.txt" \
+    -icmd="${run_rvtest_wes}" --tag="Step2-rvt" --instance-type "mem1_ssd1_v2_x36"\
+    --destination="${out_dir}" --brief --yes    
+done
+
+
+
+
+
+
+####################
+
+# TEST RUN ON CHR 21
+
+#  genelist=\"--gene \$(grep -E '^[A-Za-z0-9]+$' \${gene_file} | tr '[:lower:]' '[:upper:]' | paste -sd, -)\"; \
+#-iin="${txt_file_dir}/${gene_file}" \
+### HAVE USED GENERAL DEFINITION OF 'RARE VARIANTS HERE AS MAF < 1%'
+#    genelist="--gene $(grep -E '^[A-Za-z0-9]+$' ${gene_file} | tr '[:lower:]' '[:upper:]' | paste -sd, -)"; \
+#    --covar ${cov_file} --covar-name sex,p26201_a0,p26201_a1,p26201_a2,p26201_a3 \
+
+
+
+#run_rvtest_wes="wget https://github.com/zhanxw/rvtests/releases/download/v2.1.0/rvtests_linux64.tar.gz; \
+#   tar zxvf rvtests_linux64.tar.gz;  \
+#    ./executable/rvtest --noweb --inVcf WES_c21_qc_lof_pass.vcf.gz --freqUpper 0.01 \
+#    --pheno ${pheno_file} --pheno-name status --out out_c21_rvtest_gs5 \
+#    --geneFile refFlat_c21.txt --burden cmc --kernel skato ; \
+#    rm rvtests_linux64.tar.gz; rm -rf ex*; rm -rf READM* "
+  
+#dx run swiss-army-knife -iin="${data_file_dir}/WES_c21_qc_lof_pass.vcf.gz" \
+#  -iin="${data_file_dir}/WES_c21_qc_lof_pass.vcf.gz.tbi" \
+#  -iin="${txt_file_dir}/${pheno_file}" \
+#  -iin="${txt_file_dir}/${cov_file}" \
+#  -iin="${ref_dir}/refFlat_c21.txt" \
+#  -icmd="${run_rvtest_wes}" --tag="Step2-rvt" --instance-type "mem1_ssd1_v2_x36"\
+#  --destination="${out_dir}" --brief --yes
+
+####################
