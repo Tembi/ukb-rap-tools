@@ -44,18 +44,18 @@ data_file_dir="/Epilepsy/test_output"
 
 merge_cmd='out_file_cmc="epi_rv_combined_allchr.CMC.assoc"
       out_file_skatO="epi_rv_combined_allchr.SkatO.assoc"
-      cp /mnt/project/Epilepsy/test_output/rv_out/out_c*_combined_rvtest_gs.assoc* .
+      cp /mnt/project/Epilepsy/test_output/rv_out/out_c[0-9]*_combined_rvtest_gs5.*.assoc
 
 echo -e "Gene\tRANGE\tN_INFORMATIVE\tNumVar\tNumPolyVar\tNonRefSite\tPvalue" > $out_file_cmc
 echo -e "Gene\tRANGE\tN_INFORMATIVE\tNumVar\tNumPolyVar\tQ\tRho\tPvalue" > $out_file_skatO
 
-files="./*_c*CMC.assoc"
+files="./*_combined_rvtest_gs5.CMC.assoc"
 for f in $files
 do
    tail -n+2 $f | tr " " "\t" >> $out_file_cmc
 done
 
-files="./*_c*SkatO.assoc"
+files="./*_combined_rvtest_gs5.SkatO.assoc"
 for f in $files
 do
    tail -n+2 $f | tr " " "\t" >> $out_file_skatO
